@@ -30,17 +30,17 @@ class Window(object):
     def draw(self):
         pass
 
-ShipTuple = collections.namedtuple("Ship", ['id', 'name', 'fleet', 'current_fuel', 'max_fuel', 'current_health', 'max_health'])
+ShipTuple = collections.namedtuple("Ship", ['id', 'name', 'fleet', 'current_fuel', 'max_fuel', 'current_health', 'max_health', 'location_x', 'location_y'])
 class ShipsWindow(Window):
     def init_window(self):
-        self.window = curses.newwin(12, 80, 0, 36)
+        self.window = curses.newwin(12, 93, 0, 36)
         self.window.border()
 
     def draw(self):
         self.window.addstr(0, 4, "Ships")
 
     def update(self):
-        self.cursor.execute("SELECT id, name, fleet_id, current_fuel, max_fuel, current_health, max_health FROM my_ships;")
+        self.cursor.execute("SELECT id, name, fleet_id, current_fuel, max_fuel, current_health, max_health, location_x, location_y FROM my_ships;")
 
         results = []
 
@@ -50,8 +50,8 @@ class ShipsWindow(Window):
         self.data = results
 
     def draw(self):
-        header = "%s | %s | %s | %s | %s" % ("ID".center(5), "Name".center(15), "Fleet".center(20), "Fuel".center(12), "Health".center(12))
-        sep = "%s-+-%s-+-%s-+-%s-+-%s" % ("-"*5, "-"*15, "-"*20, "-"*12, "-"*12)
+        header = "%s | %s | %s | %s | %s | %s" % ("ID".center(5), "Name".center(15), "Fleet".center(20), "Fuel".center(12), "Health".center(12), "X/Y".center(10))
+        sep = "%s-+-%s-+-%s-+-%s-+-%s-+-%s" % ("-"*5, "-"*15, "-"*20, "-"*12, "-"*12, "-"*10)
 
         self.window.addstr(0, 4, "Ships")
         self.window.addstr(1, 2, header)
@@ -59,11 +59,12 @@ class ShipsWindow(Window):
 
         for line in xrange(0, len(self.data)):
             row = self.data[line]
-            row_string = "%s | %s | %s | %s | %s" % (str(row.id).ljust(5),
+            row_string = "%s | %s | %s | %s | %s | %s" % (str(row.id).ljust(5),
                                                      row.name.ljust(15),
                                                      str(row.fleet).ljust(20),
                                                      ("%s/%s" % (row.current_fuel, row.max_fuel)).ljust(12),
-                                                     ("%s/%s" % (row.current_health, row.max_health)).ljust(12))
+                                                     ("%s/%s" % (row.current_health, row.max_health)).ljust(12),
+                                                     ("%s/%s" % (row.location_x, row.location_y)).ljust(10))
             self.window.addstr(3+line, 2, row_string)
 
 InfoTuple = collections.namedtuple("Info", ['user', 'money', 'fuel', 'last_update'])
