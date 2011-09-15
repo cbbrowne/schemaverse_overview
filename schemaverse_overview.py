@@ -66,7 +66,7 @@ class ShipsWindow(Window):
         self.window.border()
 
     def update(self):
-        self.cursor.execute("SELECT id, name, fleet_id, current_fuel, max_fuel, current_health, max_health, location_x, location_y FROM my_ships;")
+        self.cursor.execute("SELECT id, name, fleet_id, current_fuel, max_fuel, current_health, max_health, location_x, location_y FROM my_ships LIMIT 8;")
 
         results = []
 
