@@ -42,7 +42,7 @@ class EventWindow(Window):
 
         line = 1
         for row in self.data:
-            row_string = "%s: %s" % (str(row.time), row.event_description)
+            row_string = "[%s] %s" % (row.time. strftime("%d/%b %H:%M:%S"), row.event_description)
 
             self.window.addstr(line, 2, row_string)
             line += 1
