@@ -20,6 +20,7 @@ class Window(object):
         self.app = app
         self.cursor = self.app.db.cursor()
         self.window = None
+        self.data = None
 
     def init_window(self):
         pass
@@ -30,14 +31,39 @@ class Window(object):
     def draw(self):
         pass
 
+EventTuple = collections.namedtuple("Event", ['time', 'event_description'])
+class EventWindow(Window):
+    def init_window(self):
+        self.window = curses.newwin(16, 129, 12, 0)
+        self.window.border()
+
+    def draw(self):
+        self.window.addstr(0, 4, "Events")
+
+        line = 1
+        for row in self.data:
+            row_string = "%s: %s" % (str(row.time), row.event_description)
+
+            self.window.addstr(line, 2, row_string)
+            line += 1
+
+        self.window.redrawwin()
+
+    def update(self):
+        self.cursor.execute("SELECT toc, READ_EVENT(id) FROM my_events WHERE player_id_1 = GET_PLAYER_ID(%s) OR player_id_2 = GET_PLAYER_ID(%s) ORDER BY toc DESC LIMIT 14;", (USERNAME, USERNAME))
+
+        results = []
+
+        for result in self.cursor.fetchall():
+            results.append(EventTuple(*result))
+
+        self.data = reversed(results)
+
 ShipTuple = collections.namedtuple("Ship", ['id', 'name', 'fleet', 'current_fuel', 'max_fuel', 'current_health', 'max_health', 'location_x', 'location_y'])
 class ShipsWindow(Window):
     def init_window(self):
         self.window = curses.newwin(12, 93, 0, 36)
         self.window.border()
-
-    def draw(self):
-        self.window.addstr(0, 4, "Ships")
 
     def update(self):
         self.cursor.execute("SELECT id, name, fleet_id, current_fuel, max_fuel, current_health, max_health, location_x, location_y FROM my_ships;")
@@ -70,7 +96,7 @@ class ShipsWindow(Window):
 InfoTuple = collections.namedtuple("Info", ['user', 'money', 'fuel', 'last_update'])
 class InfoWindow(Window):
     def init_window(self):
-        self.window = curses.newwin(6, 35, 0, 0)
+        self.window = curses.newwin(12, 35, 0, 0)
         self.window.border()
 
     def update(self):
@@ -86,7 +112,7 @@ class InfoWindow(Window):
         self.window.addstr(4, 2, "Last Updated: %s" % self.data.last_update.strftime("%H:%M:%S"))
 
 class Application(object):
-    _load_modules = ['Info', 'Ships']
+    _load_modules = ['Info', 'Ships', 'Event']
     def __init__(self, screen):
         self.screen = screen
         self.db = None
