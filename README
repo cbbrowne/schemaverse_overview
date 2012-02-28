@@ -1,0 +1,12 @@
+README
+
+Configuration
+
+Indicate the host, user, database, and port via the usual PostgreSQL environment variables:
+- PGHOST
+- PGUSER
+- PGPORT
+- PGDATABASE
+
+Set the password using ~/.pgpass, per the documentation:
+   <http://www.postgresql.org/docs/9.1/static/libpq-pgpass.html>

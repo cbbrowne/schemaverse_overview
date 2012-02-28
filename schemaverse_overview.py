@@ -9,11 +9,23 @@ import sys
 
 from curses import wrapper
 
-HOST="db.schemaverse.com"
-USERNAME=""
-PASSWORD=""
-DATABASE="schemaverse"
-
+# Draw data from environment
+if os.getenv("PGHOST") == "":
+    HOST="db.schemaverse.com"
+else:
+    HOST=os.getenv("PGHOST")
+if os.getenv("PGUSER") == "":
+    USERNAME=os.getlogin()
+else:
+    USERNAME=os.getenv("PGUSER")
+if os.getenv("PGPORT") == "":
+    PORT="5432"
+else:
+    PORT=os.getenv("PGPORT")
+if os.getenv("PGDATABASE") == "":
+    DATABASE="schemaverse"
+else:
+    DATABASE=os.getenv("PGDATABASE")
 
 class Window(object):
     def __init__(self, app):
@@ -119,7 +131,7 @@ class Application(object):
         self.modules = []
 
     def connect(self):
-        self.db = psycopg2.connect(database=DATABASE, user=USERNAME, password=PASSWORD, host=HOST)
+        self.db = psycopg2.connect(database=DATABASE, user=USERNAME, port=PORT, host=HOST)
 
     def init_modules(self):
         for module in self._load_modules:
